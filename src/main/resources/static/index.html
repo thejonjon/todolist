@@ -20,33 +20,12 @@
 </style>
 
 <script>
-var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('MainCtrl',function($scope,$http,$q,$timeout){
+var MyApp = angular.module('MyApp',['ui.bootstrap']).controller('MainCtrl',function($scope,$http){
     $scope.init = function(){
-
-        $scope.something = 1;
-        $scope.response = 'nothingyet';
+        $scope.debug = 'nothingyet';
         
-        $scope.new_list_name = 'nothingyet';
         $scope.lists = [];
         
-        $scope.current_list = null;
-        $scope.list_items = [];
-    };
-    
-    $scope.get_whatever = function(){
-        var deferred = $q.defer();
-        $http.get('greeting?name=bob'+$scope.something).success(function(data){
-            $scope.response = data;
-            deferred.resolve();
-        });
-        return deferred.promise;
-    };
-    
-    $scope.button_press = function(){
-        $scope.get_whatever().then(function(){
-            alert('done');
-            $scope.something++;
-        });
     };
     
     $scope.setup_lists = function(){
@@ -57,15 +36,15 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
     
     $scope.get_lists = function(){
         $http.get('get_lists').success(function(data){
-            $scope.response = data;
+            $scope.debug = data;
             $scope.lists = data;
         });
     };
     
-    $scope.create_list= function(){
-        $http.post('create_list',JSON.stringify({'name':$scope.new_list_name})).success(function(data){
-            alert("List added " + data);
-            $scope.lists.push({'id':data,'name':$scope.new_list_name});
+    $scope.create_list = function(){
+        var new_name = prompt("Enter list name", "new list");
+        $http.post('create_list',JSON.stringify({'name':new_name})).success(function(data){
+            $scope.lists.push({'id':data,'name':new_name});
         });
     };
     
@@ -75,20 +54,12 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
         });
     };
     
-    $scope.get_list_items = function(list_id){
-        $http.get('list_items/'+list_id).success(function(data){
-            $scope.list_items = data;
-        });
-    };
-    
-    //CORE worker related functions
-    $scope.set_loading = function(text){
-        if(text){
-            $scope.loading_message = text;
-            $scope.loading = true;
-        }else{
-            $scope.loading = null;
-            $scope.loading_message = null;
+    $scope.rename_list = function(list_index){
+    var new_name = prompt("Enter list name", $scope.lists[list_index].name);
+        if (new_name != null) {
+            $http.post('update_list/'+$scope.lists[list_index].id,JSON.stringify({'name':new_name})).success(function(){
+                $scope.lists[list_index].name = new_name;
+            });
         }
     };
     
@@ -99,26 +70,33 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
 
 <body ng-controller='MainCtrl'>
 
-<button ng-click='setup_lists()'>Load Sample Data</button>
-<button ng-click='get_lists()'>get_lists</button>
-
-<div ng-if='loading_message'>
-    <img src='img/loading.gif'><br>
-    {{loading_message}}
-</div>
-
-<p>
-    <input id='new_list_name' type='text' ng-model='new_list_name'>
-    <button ng-click='create_list()'>create_list</button>
-</p>
-
+<button ng-click='setup_lists()'>Reset to Sample Data</button>
+<button ng-click='get_lists()'>Reload Lists</button>
 <hr>
-
-<p>{{response}}</p>
-<div class='well'>
-    <p ng-repeat='list in lists'>
-        <a href='list.html?list_id={{list.id}}'>{{list.name}}</a><img src='img/delete.png' ng-click='delete_list($index)' />
-    </p>
+<center>
+<h1>Home Page</h1>
+</center>
+<hr>
+<center>
+<div class='well' style='display:inline-block;'>
+    <table width=400>
+        <tr>
+            <td>Todo Lists:</td>
+            <td colspan=2 width=50><button ng-click='create_list()'>New</button></td>
+        </tr>
+        <tr ng-repeat='list in lists'>
+            <td>
+                <a href='list.html?list_id={{list.id}}'>{{list.name}}</a>
+            </td>
+            <td>
+                [<span ng-click='rename_list($index)'>rename</span>]
+            </td>
+            <td>
+                <img src='img/delete.png' ng-click='delete_list($index)' />
+            </td>
+        </tr>
+    </table>
 </div>
+</center>
 </body>
 </html>

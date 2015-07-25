@@ -27,7 +27,7 @@ public class TodoListController {
     //ITEMS {id:{'description':string,'completed':bool,'list_id':int}, ...}
     private HashMap<Integer, ItemData> ITEMS = new HashMap<Integer, ItemData>();
     
-    //Sample data route
+    //ASYNC sample data route
     @RequestMapping("/setup")
     public void setInitData(){
         //Clear the lists first
@@ -58,7 +58,7 @@ public class TodoListController {
                                                 "mow carpet",false, new Integer(list_counter.get())));
     }
     
-    /* List routes */
+    /* ASYNC List routes */
     
     //Fetch all lists
     @RequestMapping("/get_lists")
@@ -76,6 +76,20 @@ public class TodoListController {
         return new Integer(list_counter.get());
     }
     
+    //Update List
+    @RequestMapping(method=RequestMethod.POST, value="/list_update/{list_id}")
+    public void updateList(@PathVariable Integer list_id, @RequestBody HashMap<String,String> list_data){
+        //Returns nothing
+        
+        //Not sure how in java I could do a python like .update call on the dataset
+        //so explicitly looking for the two fields that can be updated. I'd rather program
+        //this more abstractly and be able to itterate over a list of acceptable fields and 
+        //call their associated method for setting the values.
+        if(list_data.containsKey("name")){
+            LISTS.get(list_id).setName(list_data.get("name"));
+        }
+    }
+    
     //Delete list
     @RequestMapping(method=RequestMethod.DELETE, value="/delete_list/{list_id}")
     public void deleteList(@PathVariable Integer list_id){
@@ -91,7 +105,12 @@ public class TodoListController {
         LISTS.remove(list_id);
     }
     
-    /* item routes */
+    /* List Items route */
+    //TODO need to make a route for list/list_id to host a new page with items loaded in
+    //and remove the async list_items (rather convert) the function
+    
+    
+    /* ASYNC item routes */
     
     //Fetch list items
     @RequestMapping("/list_items/{list_id}")
@@ -122,5 +141,23 @@ public class TodoListController {
                                     new_item.get("description"),false,list_id));
         
         return new Integer(item_counter.get());
+    }
+    
+    //Update item
+    @RequestMapping(method=RequestMethod.POST, value="/item_update/{item_id}")
+    public void updateItem(@PathVariable Integer item_id, @RequestBody HashMap<String,String> item_data){
+        //Returns nothing
+        
+        //Not sure how in java I could do a python like .update call on the dataset
+        //so explicitly looking for the two fields that can be updated. I'd rather program
+        //this more abstractly and be able to itterate over a list of acceptable fields and 
+        //call their associated method for setting the values.
+        if(item_data.containsKey("completed")){
+            ITEMS.get(item_id).setCompleted(new Boolean(item_data.get("completed")));
+        }
+        
+        if(item_data.containsKey("description")){
+            ITEMS.get(item_id).setDescription(item_data.get("description"));
+        }
     }
 }

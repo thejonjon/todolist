@@ -8,15 +8,15 @@
 <link rel="stylesheet" href="css/bootstrap.min.css">
 
 <style>
-	body{
-		overflow-y: scroll;
+    body{
+        overflow-y: scroll;
         }
-	label {
-		display: inline;
-	}
-	input[type="checkbox"]{
-		display:inline;
-	}
+    label {
+        display: inline;
+    }
+    input[type="checkbox"]{
+        display:inline;
+    }
 </style>
 
 <script>
@@ -25,11 +25,14 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
 
         $scope.something = 1;
         $scope.response = 'nothingyet';
+        
         $scope.new_list_name = 'nothingyet';
         $scope.lists = [];
         
-        //$scope.word_to_swap=null;
+        $scope.current_list = null;
+        $scope.list_items = [];
     };
+    
     $scope.get_whatever = function(){
         var deferred = $q.defer();
         $http.get('greeting?name=bob'+$scope.something).success(function(data){
@@ -44,11 +47,11 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
             alert('done');
             $scope.something++;
         });
-    }
+    };
     
     $scope.setup_lists = function(){
         $http.get('setup').success(function(data){
-            alert("Lists Setup");
+            $scope.get_lists();
         });
     };
     
@@ -66,32 +69,53 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
         });
     };
     
-	//CORE worker related functions
-	$scope.setLoading = function(text){
-		if(text){
-			$scope.loading_message = text;
-                        $scope.loading = true;
-		}else{
-                        $scope.loading = null;
-			$scope.loading_message = null;
-		}
-	};
-	$scope.init();
+    $scope.list_click = function(list){
+        
+    };
+    
+    $scope.get_list_items = function(list_id){
+        $http.get('list_items/'+list_id).success(function(data){
+            $scope.list_items = data;
+        });
+    };
+    
+    //CORE worker related functions
+    $scope.set_loading = function(text){
+        if(text){
+            $scope.loading_message = text;
+            $scope.loading = true;
+        }else{
+            $scope.loading = null;
+            $scope.loading_message = null;
+        }
+    };
+    
+    $scope.init();
 });
 </script>
 </head>
+
 <body ng-controller='MainCtrl'>
-<button ng-click='button_press()'>greeting</button>
-<button ng-click='setup_lists()'>setup</button>
+
+<button ng-click='setup_lists()'>Load Sample Data</button>
 <button ng-click='get_lists()'>get_lists</button>
+
+<div ng-if='loading_message'>
+    <img src='img/loading.gif'><br>
+    {{loading_message}}
+</div>
+
 <p>
-<input id='new_list_name' type='text' ng-model='new_list_name'><button ng-click='create_list()'>create_list</button>
+    <input id='new_list_name' type='text' ng-model='new_list_name'>
+    <button ng-click='create_list()'>create_list</button>
 </p>
+
 <hr>
+
 <p>{{response}}</p>
 <div class='well'>
     <p ng-repeat='list in lists'>
-        <a href='javascript:void();' ng-click='load_items(list.id);'>{{list.name}}</a>
+        <a href='javascript:void(0)' ng-click='load_items(list.id);'>{{list.name}}</a>
     </p>
 </div>
 </body>

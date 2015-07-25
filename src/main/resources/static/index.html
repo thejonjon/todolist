@@ -26,6 +26,7 @@ var MyApp = angular.module('MyApp',['ui.bootstrap']).controller('MainCtrl',funct
         
         $scope.lists = [];
         
+        $scope.get_lists();
     };
     
     $scope.setup_lists = function(){
@@ -81,8 +82,8 @@ var MyApp = angular.module('MyApp',['ui.bootstrap']).controller('MainCtrl',funct
 <div class='well' style='display:inline-block;'>
     <table width=400>
         <tr>
-            <td>Todo Lists:</td>
-            <td colspan=2 width=50><button ng-click='create_list()'>New</button></td>
+            <td width='100%'>Todo Lists:</td>
+            <td colspan=2><button ng-click='create_list()'>New</button></td>
         </tr>
         <tr ng-repeat='list in lists'>
             <td>

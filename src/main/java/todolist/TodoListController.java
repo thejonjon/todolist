@@ -7,6 +7,7 @@ import java.util.List;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,25 +95,21 @@ public class TodoListController {
     @RequestMapping(method=RequestMethod.DELETE, value="/delete_list/{list_id}")
     public void deleteList(@PathVariable Integer list_id){
         //Remove any items on the list
-        Set <Integer> keys = ITEMS.keySet();
+        /*Set <Integer> keys = ITEMS.keySet();
         for (Integer key : keys){
             if (ITEMS.get(key).getListId().equals(list_id) ){
                 ITEMS.remove(key);
             }
         }
-        
+        */
         //Remove the list
         LISTS.remove(list_id);
     }
     
-    /* List Items route */
-    //TODO need to make a route for list/list_id to host a new page with items loaded in
-    //and remove the async list_items (rather convert) the function
-    
-    
     /* ASYNC item routes */
     
     //Fetch list items
+    
     @RequestMapping("/list_items/{list_id}")
     public List getListItems(@PathVariable Integer list_id){
         //Returns variable ret - ITEMS that match the list_id

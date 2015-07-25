@@ -69,8 +69,10 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
         });
     };
     
-    $scope.list_click = function(list){
-        
+    $scope.delete_list = function(index){
+        $http.delete('delete_list/'+$scope.lists[index].id).success(function(data){
+            $scope.lists.splice(index, 1);
+        });
     };
     
     $scope.get_list_items = function(list_id){
@@ -115,7 +117,7 @@ var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('Mai
 <p>{{response}}</p>
 <div class='well'>
     <p ng-repeat='list in lists'>
-        <a href='javascript:void(0)' ng-click='load_items(list.id);'>{{list.name}}</a>
+        <a href='list.html?list_id={{list.id}}'>{{list.name}}</a><img src='img/delete.png' ng-click='delete_list($index)' />
     </p>
 </div>
 </body>

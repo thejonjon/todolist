@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html ng-app='MyApp' xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Todo List</title>
+<script src="lib/angular.1.2.4-min.js"></script>
+<script src="lib/angular-animate.js"></script>
+<script src="lib/ui-bootstrap-tpls-0.10.0.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+
+<style>
+    body{
+        overflow-y: scroll;
+        }
+    label {
+        display: inline;
+    }
+    input[type="checkbox"]{
+        display:inline;
+    }
+</style>
+
+<script>
+var URLPARAMS;
+(window.onpopstate = function () {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    URLPARAMS = {};
+    while (match = search.exec(query)){
+       URLPARAMS[decode(match[1])] = decode(match[2]);
+    }
+})();
+
+var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('MainCtrl',function($scope,$http,$q,$timeout,$location){
+    $scope.init = function(){
+        
+        $scope.something = 1;
+        $scope.response = 'nothingyet';
+        console.log($location.search().target);
+        console.log($location.search());
+        $scope.new_item_description = 'nothingyet';
+        
+        //$scope.current_list = null;
+        $scope.items = [];
+        $scope.get_list_items(URLPARAMS['list_id']);
+        
+    };
+    
+    $scope.get_list_items = function(list_id){
+        $http.get('list_items/'+list_id).success(function(data){
+            $scope.items = data;
+        });
+    };
+    
+    //CORE worker related functions
+    $scope.set_loading = function(text){
+        if(text){
+            $scope.loading_message = text;
+            $scope.loading = true;
+        }else{
+            $scope.loading = null;
+            $scope.loading_message = null;
+        }
+    };
+    
+    $scope.init();
+});
+</script>
+</head>
+
+<body ng-controller='MainCtrl'>
+
+<div ng-if='loading_message'>
+    <img src='img/loading.gif'><br>
+    {{loading_message}}
+</div>
+<p>
+    <input id='new_item_description' type='text' ng-model='new_item_description'>
+    <button ng-click='create_item()'>create item</button>
+</p>
+
+<hr>
+
+<div class='well'>
+    <p ng-repeat='item in items'>
+        <a href='javascript:void(0)'>{{item.description}}</a>
+    </p>
+</div>
+</body>
+</html>

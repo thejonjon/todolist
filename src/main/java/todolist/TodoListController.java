@@ -78,7 +78,7 @@ public class TodoListController {
     }
     
     //Update List
-    @RequestMapping(method=RequestMethod.POST, value="/list_update/{list_id}")
+    @RequestMapping(method=RequestMethod.POST, value="/update_list/{list_id}")
     public void updateList(@PathVariable Integer list_id, @RequestBody HashMap<String,String> list_data){
         //Returns nothing
         
@@ -141,7 +141,7 @@ public class TodoListController {
     }
     
     //Update item
-    @RequestMapping(method=RequestMethod.POST, value="/item_update/{item_id}")
+    @RequestMapping(method=RequestMethod.POST, value="/update_item/{item_id}")
     public void updateItem(@PathVariable Integer item_id, @RequestBody HashMap<String,String> item_data){
         //Returns nothing
         

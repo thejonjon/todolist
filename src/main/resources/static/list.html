@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
-<html ng-app='MyApp' xmlns:th="http://www.thymeleaf.org">
+<html ng-app='MyApp'>
 <head>
-<title>Todo List</title>
+<title>Todo List Items</title>
 <script src="lib/angular.1.2.4-min.js"></script>
 <script src="lib/angular-animate.js"></script>
 <script src="lib/ui-bootstrap-tpls-0.10.0.min.js"></script>
@@ -34,60 +34,88 @@ var URLPARAMS;
     }
 })();
 
-var MyApp = angular.module('MyApp',['ngAnimate','ui.bootstrap']).controller('MainCtrl',function($scope,$http,$q,$timeout,$location){
+var MyApp = angular.module('MyApp',['ui.bootstrap']).controller('MainCtrl',function($scope,$http,$timeout){
     $scope.init = function(){
-        
-        $scope.something = 1;
-        $scope.response = 'nothingyet';
-        console.log($location.search().target);
-        console.log($location.search());
-        $scope.new_item_description = 'nothingyet';
-        
+    
         //$scope.current_list = null;
         $scope.items = [];
-        $scope.get_list_items(URLPARAMS['list_id']);
+        $scope.list_id = URLPARAMS['list_id'];
+        $scope.get_list_items($scope.list_id);
         
     };
     
     $scope.get_list_items = function(list_id){
         $http.get('list_items/'+list_id).success(function(data){
             $scope.items = data;
+        }).error(function(data){
+            alert('error loading list');
         });
     };
     
-    //CORE worker related functions
-    $scope.set_loading = function(text){
-        if(text){
-            $scope.loading_message = text;
-            $scope.loading = true;
-        }else{
-            $scope.loading = null;
-            $scope.loading_message = null;
+    $scope.create_item = function(){
+        var new_name = prompt("Enter item description", "new item");
+        $http.post('create_item/'+$scope.list_id,JSON.stringify({'description':new_name})).success(function(data){
+            $scope.items.push({'id':data,'description':new_name,'completed':false,'list_id':$scope.list_id});
+        });
+    };
+    
+    $scope.delete_item = function(index){
+        $http.delete('delete_item/'+$scope.items[index].id).success(function(data){
+            $scope.items.splice(index, 1);
+        });
+    };
+    
+    $scope.rename_item = function(item_index){
+    var new_name = prompt("Enter new description", $scope.items[item_index].description);
+        if (new_name != null) {
+            $http.post('update_item/'+$scope.items[item_index].id,JSON.stringify({'description':new_name})).success(function(){
+                $scope.items[item_index].description = new_name;
+            });
         }
     };
     
+    $scope.toggle_completed = function(item){
+        var state = false;
+        if(item.completed){
+            state = true;
+        }
+        
+         $http.post('update_item/'+item.id,JSON.stringify({'completed':state})).success(function(){
+            //pass
+        });
+    }
     $scope.init();
 });
 </script>
 </head>
 
 <body ng-controller='MainCtrl'>
-
-<div ng-if='loading_message'>
-    <img src='img/loading.gif'><br>
-    {{loading_message}}
-</div>
-<p>
-    <input id='new_item_description' type='text' ng-model='new_item_description'>
-    <button ng-click='create_item()'>create item</button>
-</p>
-
 <hr>
-
-<div class='well'>
-    <p ng-repeat='item in items'>
-        <a href='javascript:void(0)'>{{item.description}}</a>
-    </p>
+<center>
+<h1>List Details | <a href='/' class='btn'>Home</a></h1>
+</center>
+<hr>
+<center>
+<div class='well' style='display:inline-block;'>
+    <table width=400>
+        <tr>
+            <td colspan=2 width=100%>List name:</td>
+            <td colspan=2 width=50><button ng-click='create_item()'>New</button></td>
+        </tr>
+        <tr ng-repeat='item in items'>
+            <td><input type='checkbox' ng-model='item.completed' ng-change='toggle_completed(item)'>
+            <td>
+                {{item.description}}
+            </td>
+            <td>
+                [<span ng-click='rename_item($index)'>rename</span>]
+            </td>
+            <td>
+                <img src='img/delete.png' ng-click='delete_item($index)' />
+            </td>
+        </tr>
+    </table>
 </div>
+<center>
 </body>
 </html>

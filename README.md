@@ -13,6 +13,7 @@ TODO - Find better icons for actions
 TODO - Write tests
 TODO - clean up ListData and ItemData classes, removing unused methods
 TODO - add in associtive array maping list's to their list items to depricate the inefficent itteration of the entire item "table" to find fk relational mumbo-jumbo.
+TODO - Drop LISTS and ITEMS hashmaps into external library with methods and accessors. That way a DB backend (or any other  backend) could easily be swapped in without having to make modifications to the controller. If not for my rustyness with java and first time with spring, that's my prefeared organization.
 
 Other research TODO items-
 TODO - Understand the difference between @RestController and @Controller, and how to use them together.

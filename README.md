@@ -18,3 +18,4 @@ TODO - Drop LISTS and ITEMS hashmaps into external library with methods and acce
 Other research TODO items-
 TODO - Understand the difference between @RestController and @Controller, and how to use them together.
 TODO - Spring io seems magical when returning values for routes, figure out how it knows what it's doing.
+ 

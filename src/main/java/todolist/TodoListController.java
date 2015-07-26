@@ -95,13 +95,20 @@ public class TodoListController {
     @RequestMapping(method=RequestMethod.DELETE, value="/delete_list/{list_id}")
     public void deleteList(@PathVariable Integer list_id){
         //Remove any items on the list
-        /*Set <Integer> keys = ITEMS.keySet();
+        
+        //to delete array, since deleting while itterating causes issues
+        List to_del = new ArrayList();
+        
+        Set <Integer> keys = ITEMS.keySet();
         for (Integer key : keys){
             if (ITEMS.get(key).getListId().equals(list_id) ){
-                ITEMS.remove(key);
+                to_del.add(key);
+                //ITEMS.remove(key);
             }
         }
-        */
+        for (Object key : to_del){
+            ITEMS.remove(key);
+        }
         //Remove the list
         LISTS.remove(list_id);
     }

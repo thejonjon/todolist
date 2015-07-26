@@ -10,6 +10,7 @@ To compile and launch-
 mvn package && java -jar target/todolist-0.1.0.jar
 
 Misc non-critical TODO items
+
 TODO - Write better readme file
 
 TODO - Remove unused files in the static lib directory

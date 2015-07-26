@@ -97,6 +97,7 @@ public class TodoListController {
         //Remove any items on the list
         
         //to delete array, since deleting while itterating causes issues
+        //There has got to be a better way to do this in java
         List to_del = new ArrayList();
         
         Set <Integer> keys = ITEMS.keySet();
@@ -106,32 +107,37 @@ public class TodoListController {
                 //ITEMS.remove(key);
             }
         }
+        
+        //Actually erase the items
         for (Object key : to_del){
             ITEMS.remove(key);
         }
-        //Remove the list
+        
+        //Erase the list
         LISTS.remove(list_id);
     }
     
     /* ASYNC item routes */
     
     //Fetch list items
-    
     @RequestMapping("/list_items/{list_id}")
     public List getListItems(@PathVariable Integer list_id){
         //Returns variable ret - ITEMS that match the list_id
+        
+        //TODO - first check LISTS to make sure the key exists otherwise raise 404 error. Figure out how to raise 404 using spring.
         
         List ret = new ArrayList();
         
         //TODO - use reference array in ListData so wont have to itterate over all items
         
-        //Find items and add to ret
+        //Find items and add to return
         Set <Integer> keys = ITEMS.keySet();
         for (Integer key : keys){
             if (ITEMS.get(key).getListId().equals(list_id) ){
                 ret.add(ITEMS.get(key));
             }
         }
+        
         return ret;
     }
     
